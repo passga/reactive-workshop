@@ -15,7 +15,7 @@ public class ReactiveWorkshopApplication {
 
 
 	@Bean
-	RestTemplate client() {
+	RestTemplate commentsApiClient() {
 		return new RestTemplateBuilder().rootUri("http://localhost:3004").build();
 	}
 
