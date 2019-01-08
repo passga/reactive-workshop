@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.bonitasoft.reactiveworkshop.domain.Artist;
 import com.bonitasoft.reactiveworkshop.domain.Comment;
+import com.bonitasoft.reactiveworkshop.exception.NotFoundException;
 import com.bonitasoft.reactiveworkshop.repository.ArtistRepository;
 import com.bonitasoft.reactiveworkshop.service.web.CommentsService;
 
@@ -32,8 +33,8 @@ public class GenreApi {
 	}
 
 	@GetMapping("/genres/{genre}/comments")
-	public List<Comment> findCommentsByGenre(@PathVariable String genre) {
-		return artistRepository.findByGenre(genre).stream().map(artist -> {
+	public List<Comment> findCommentsByGenre(@PathVariable String genre) throws NotFoundException {
+		return artistRepository.findByGenre(genre).orElseThrow(NotFoundException::new).stream().map(artist -> {
 					return commentsRepository.getCommentsByArtisteId(artist.getId()).stream().map(comment -> {
 						comment.setArtisteId(artist.getId());
 						comment.setArtistName(artist.getName());
