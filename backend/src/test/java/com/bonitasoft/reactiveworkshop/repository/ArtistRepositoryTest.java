@@ -27,7 +27,7 @@ public class ArtistRepositoryTest {
 	}
 
 	@Test
-	public void should_return_if_presnt_false_when_gener_is_unknown() {
+	public void should_return_if_present_false_when_genre_is_unknown() {
 		Optional<List<Artist>> artists = artistRepository.findByGenre("toto");
 		assertEquals(false, artists.isPresent());
 	}
