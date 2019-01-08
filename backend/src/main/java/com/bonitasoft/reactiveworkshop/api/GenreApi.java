@@ -14,6 +14,9 @@ import com.bonitasoft.reactiveworkshop.exception.NotFoundException;
 import com.bonitasoft.reactiveworkshop.repository.ArtistRepository;
 import com.bonitasoft.reactiveworkshop.service.web.CommentsService;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 @RestController
 public class GenreApi {
 
@@ -34,13 +37,15 @@ public class GenreApi {
 
 	@GetMapping("/genres/{genre}/comments")
 	public List<Comment> findCommentsByGenre(@PathVariable String genre) throws NotFoundException {
-		return artistRepository.findByGenre(genre).orElseThrow(NotFoundException::new).stream().map(artist -> {
-					return commentsRepository.getCommentsByArtisteId(artist.getId()).stream().map(comment -> {
-						comment.setArtisteId(artist.getId());
-						comment.setArtistName(artist.getName());
-						return comment;
+		List<Comment> collect = artistRepository.findByGenre(genre).orElseThrow(NotFoundException::new).stream()
+				.map(artist -> {
+					List<Comment> commentsByArtisteId = commentsRepository.getCommentsByArtisteId(artist.getId());
+					return commentsByArtisteId.stream().map(comment -> {
+						return new Comment(comment.getUserName(), comment.getComment(), artist.getId(), artist.getName());
 					}).collect(Collectors.toList());
 				}).flatMap(List::stream).collect(Collectors.toList());
+		log.info("collect {}", collect);
+		return collect;
 	}
 
 }
