@@ -20,7 +20,8 @@ dependencies {
     annotationProcessor "org.projectlombok:lombok:1.18.4"
     compileOnly 'org.projectlombok:lombok:1.18.4'
     compile 'com.devskiller:jfairy:0.6.2'
-
+	// https://mvnrepository.com/artifact/javax.ws.rs/javax.ws.rs-api
+	compile group: 'javax.ws.rs', name: 'javax.ws.rs-api', version: '2.1.1'
 //    implementation('org.springframework.boot:spring-boot-starter-data-mongodb-reactive')
     implementation('org.springframework.boot:spring-boot-starter-webflux')
     testImplementation('org.springframework.boot:spring-boot-starter-test')

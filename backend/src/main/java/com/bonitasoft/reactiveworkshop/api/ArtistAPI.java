@@ -12,6 +12,9 @@ import com.bonitasoft.reactiveworkshop.exception.NotFoundException;
 import com.bonitasoft.reactiveworkshop.repository.ArtistRepository;
 import com.bonitasoft.reactiveworkshop.service.web.CommentsService;
 
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
+
 @RestController
 public class ArtistAPI {
 
@@ -24,22 +27,27 @@ public class ArtistAPI {
 	}
 
 	@GetMapping("/artist/{artistId}")
-	public Artist findById(@PathVariable String artistId) throws NotFoundException {
-		return artistRepository.findById(artistId).orElseThrow(NotFoundException::new);
+	public Mono<Artist> findById(@PathVariable String artistId) throws NotFoundException {
+		return artistRepository.findById(artistId);
 	}
 
 	@GetMapping("/artists")
-	public List<Artist> findAll() throws NotFoundException {
+	public Flux<Artist> findAll() throws NotFoundException {
 		return artistRepository.findAll();
 	}
 
 	@GetMapping("/artist/{artistId}/comments")
-	public Artist findLast10CommentsByArtistId(@PathVariable String artistId) throws NotFoundException {
-		return artistRepository.findById(artistId).map(opt -> {
-			opt.setComments(commentsRepository.getCommentsByArtisteId(opt.getId()));
-			return opt;
-		}).orElseThrow(NotFoundException::new);
-
+	public Mono<Artist> findLast10CommentsByArtistId(@PathVariable String artistId) throws NotFoundException {
+		return artistRepository.findById(artistId).map(artist -> {
+			commentsRepository.getCommentsByArtisteId(artist.getId()).doOnNext(comment -> {
+				artist.addComment(comment);				
+			});
+			return artist;
+		});
 	}
 
+	private void addComment(Artist artist) {
+		
+
+	}
 }
