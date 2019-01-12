@@ -22,7 +22,6 @@ import com.bonitasoft.reactiveworkshop.domain.Comment;
 import com.bonitasoft.reactiveworkshop.exception.NotFoundException;
 import com.bonitasoft.reactiveworkshop.repository.ArtistRepository;
 import com.bonitasoft.reactiveworkshop.service.web.CommentsService;
-import com.devskiller.jfairy.Fairy;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest

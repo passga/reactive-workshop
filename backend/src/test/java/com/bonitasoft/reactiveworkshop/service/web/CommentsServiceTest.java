@@ -14,12 +14,14 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.client.MockRestServiceServer;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.client.support.RestGatewaySupport;
+import org.springframework.web.reactive.function.client.WebClient;
 
 import com.bonitasoft.reactiveworkshop.domain.Comment;
 import com.fasterxml.jackson.core.JsonParseException;
@@ -77,5 +79,8 @@ public class CommentsServiceTest {
 		return Arrays.asList(objectMapper.readValue(body, Comment[].class));
 		
 	}
+	
+
+	
 
 }
