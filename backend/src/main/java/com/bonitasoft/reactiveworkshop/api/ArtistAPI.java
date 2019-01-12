@@ -1,11 +1,11 @@
 package com.bonitasoft.reactiveworkshop.api;
 
+import java.util.Comparator;
 import java.util.List;
 
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.client.RestTemplate;
 
 import com.bonitasoft.reactiveworkshop.domain.Artist;
 import com.bonitasoft.reactiveworkshop.exception.NotFoundException;
@@ -30,7 +30,9 @@ public class ArtistAPI {
 
 	@GetMapping("/artists")
 	public List<Artist> findAll() throws NotFoundException {
-		return artistRepository.findAll();
+		List<Artist> artists = artistRepository.findAll();
+		artists.sort(Comparator.comparing(Artist::getId));
+		return  artists;
 	}
 
 	@GetMapping("/artist/{artistId}/comments")

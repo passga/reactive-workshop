@@ -1,7 +1,6 @@
 package com.bonitasoft.reactiveworkshop.api;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
@@ -15,21 +14,28 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.boot.test.web.client.TestRestTemplate;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import com.bonitasoft.reactiveworkshop.domain.Artist;
 import com.bonitasoft.reactiveworkshop.domain.Comment;
-import com.bonitasoft.reactiveworkshop.exception.NotFoundException;
 import com.bonitasoft.reactiveworkshop.repository.ArtistRepository;
 import com.bonitasoft.reactiveworkshop.service.web.CommentsService;
 
 @RunWith(SpringRunner.class)
-@SpringBootTest
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class GenreApiTest {
 	private static final String COMMENTS_SUFFIXE = "_Comments";
 
 	private static final String NAME_SUFFIXE = "Name";
 
+	@Autowired
+	private TestRestTemplate restTemplate;
 
 	@MockBean
 	private ArtistRepository artistRepository;
@@ -45,36 +51,37 @@ public class GenreApiTest {
 		String genre = "Hard%20Rock";
 		List<String> ids = Stream.of("id1", "id2", "id3").collect(Collectors.toList());
 		List<String> userName = Stream.of("userName1", "userName2").collect(Collectors.toList());
+
+		String expected = "["//
+				+ "{\"userName\":\"userName1\",\"comment\":\"userName1_Comments\",\"artistName\":\"id1Name\",\"artist\":\"id1\"}," //
+				+ "{\"userName\":\"userName2\",\"comment\":\"userName2_Comments\",\"artistName\":\"id1Name\",\"artist\":\"id1\"},"//
+				+ "{\"userName\":\"userName1\",\"comment\":\"userName1_Comments\",\"artistName\":\"id2Name\",\"artist\":\"id2\"}," //
+				+ "{\"userName\":\"userName2\",\"comment\":\"userName2_Comments\",\"artistName\":\"id2Name\",\"artist\":\"id2\"}," //
+				+ "{\"userName\":\"userName1\",\"comment\":\"userName1_Comments\",\"artistName\":\"id3Name\",\"artist\":\"id3\"},"//
+				+ "{\"userName\":\"userName2\",\"comment\":\"userName2_Comments\",\"artistName\":\"id3Name\",\"artist\":\"id3\"}]";
 		Optional<List<Artist>> optional = Optional.of(getArtists(ids, genre));
 		when(artistRepository.findByGenre(genre)).thenReturn(optional);
 		when(commentsRepository.getCommentsByArtisteId(anyString())).thenReturn(getComments(userName));
 
-		List<Comment> findCommentsByGenre = genreApi.findCommentsByGenre(genre);
-		assertEquals(6, findCommentsByGenre.size());
-		assertThat(findCommentsByGenre).extracting("artisteId").containsExactly("id1", "id1", "id2", "id2", "id3",
-				"id3");
-		assertThat(findCommentsByGenre).extracting("artistName").containsExactly("id1" + NAME_SUFFIXE,
-				"id1" + NAME_SUFFIXE, "id2" + NAME_SUFFIXE, "id2" + NAME_SUFFIXE, "id3" + NAME_SUFFIXE,
-				"id3" + NAME_SUFFIXE);
-
-		assertThat(findCommentsByGenre).extracting("comment").containsExactly("userName1" + COMMENTS_SUFFIXE,
-				"userName2" + COMMENTS_SUFFIXE, "userName1" + COMMENTS_SUFFIXE, "userName2" + COMMENTS_SUFFIXE,
-				"userName1" + COMMENTS_SUFFIXE, "userName2" + COMMENTS_SUFFIXE);
-
-		assertThat(findCommentsByGenre).extracting("userName").containsExactly("userName1", "userName2", "userName1",
-				"userName2", "userName1", "userName2");
+		assertThat(this.restTemplate.getForObject("/genres/" + genre + "/comments", String.class)).isEqualTo(expected);
 	}
 
-	@Test(expected = NotFoundException.class)
+	@Test
 	public void should_throw_not_found_exception_where_genre_not_exist() throws Exception {
 		String genre = "toto";
-		List<String> ids = Stream.of("id1", "id2", "id3").collect(Collectors.toList());
 		List<String> userName = Stream.of("userName1", "userName2").collect(Collectors.toList());
 		Optional<List<Artist>> optional = Optional.empty();
 		when(artistRepository.findByGenre(genre)).thenReturn(optional);
 		when(commentsRepository.getCommentsByArtisteId(anyString())).thenReturn(getComments(userName));
 
-		genreApi.findCommentsByGenre(genre);
+		HttpHeaders headers = new HttpHeaders();
+
+		HttpEntity<String> entity = new HttpEntity<String>(null, headers);
+
+		ResponseEntity<String> response = restTemplate.exchange("/genres/" + genre + "/comments", HttpMethod.GET,
+				entity, String.class);
+
+		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
 
 	}
 
