@@ -15,7 +15,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import reactor.core.publisher.Mono;
 
-@SpringBootApplication
 
 public class ReactiveClient {
 	ObjectMapper mapper = new ObjectMapper();

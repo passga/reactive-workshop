@@ -24,15 +24,12 @@ import reactor.core.publisher.Mono;
 public class CommentsService extends Observable {
 	private EmitterProcessor<Comment> output;
 	// private RestTemplate commentsApiClient;
-	ObjectMapper mapper = new ObjectMapper();
 	WebClient client = WebClient.create("http://localhost:3004");
 
 	@Autowired
 	CommentsService() {
-		// this.commentsApiClient = commentsApiClient;
 		output = EmitterProcessor.create();
 		consumeCommenntsStream(output).subscribe();
-		output.log();
 	}
 
 	@PostConstruct
@@ -45,10 +42,8 @@ public class CommentsService extends Observable {
 	}
 
 	public Mono<Void> consumeCommenntsStream(EmitterProcessor<Comment> processor) {
-
 		return client.get().uri("/comments/stream").retrieve().bodyToFlux(Comment.class).subscribeWith(processor)
 				.then();
-
 	}
 
 	public EmitterProcessor<Comment> getComments() {

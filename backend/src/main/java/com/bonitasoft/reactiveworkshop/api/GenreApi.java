@@ -25,7 +25,7 @@ import reactor.core.publisher.Mono;
 
 @Slf4j
 @RestController
-public class GenreApi implements Observer {
+public class GenreApi{
 	ObjectMapper mapper = new ObjectMapper();
 	private ArtistRepository artistRepository;
 	private CommentsService commentsRepository;
@@ -34,8 +34,6 @@ public class GenreApi implements Observer {
 	public GenreApi(ArtistRepository artistRepository, CommentsService commentsRepository) {
 		this.artistRepository = artistRepository;
 		this.commentsRepository = commentsRepository;
-		this.commentsRepository.addObserver(this);
-		// this.commentsRepository.consumeCommenntsStream();
 	}
 
 	@GetMapping("/genres")
@@ -56,30 +54,8 @@ public class GenreApi implements Observer {
 		});
 	}
 
-	// @GetMapping(path = "/comments/{artistId}/stream", produces =
-	// MediaType.APPLICATION_STREAM_JSON_VALUE)
-	// public List<Comment> findCommentsByGenrde(@PathVariable String genre) throws
-	// NotFoundException {
-	// List<Comment> collect =
-	// artistRepository.findByGenre(genre).orElseThrow(NotFoundException::new).stream()
-	// .map(artist -> {
-	// List<Comment> commentsByArtisteId =
-	// commentsRepository.getCommentsByArtisteId(artist.getId());
-	// return commentsByArtisteId.stream().map(comment -> {
-	// return new Comment(comment.getUserName(), comment.getComment(),
-	// artist.getId(),
-	// artist.getName());
-	// }).collect(Collectors.toList());
-	// }).flatMap(List::stream).collect(Collectors.toList());
-	// log.info("collect {}", collect);
-	// return collect;
-	// }
 
-	@Override
-	public void update(Observable o, Object arg) {
-		// TODO Auto-generated method stub
 
-	}
 
 	@GetMapping(path = "/genre/{genre}/comments/stream", produces = MediaType.APPLICATION_STREAM_JSON_VALUE)
 	public Flux<Comment> handle(@PathVariable String genre) {

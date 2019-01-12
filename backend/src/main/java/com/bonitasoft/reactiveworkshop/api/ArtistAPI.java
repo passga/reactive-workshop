@@ -1,11 +1,10 @@
 package com.bonitasoft.reactiveworkshop.api;
 
-import java.util.List;
-
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.client.RestTemplate;
 
 import com.bonitasoft.reactiveworkshop.domain.Artist;
 import com.bonitasoft.reactiveworkshop.exception.NotFoundException;
@@ -27,8 +26,9 @@ public class ArtistAPI {
 	}
 
 	@GetMapping("/artist/{artistId}")
-	public Mono<Artist> findById(@PathVariable String artistId) throws NotFoundException {
-		return artistRepository.findById(artistId);
+	public Mono<ResponseEntity<Artist>> findById(@PathVariable String artistId) throws NotFoundException {
+		return artistRepository.findById(artistId).map(artist -> new ResponseEntity<>(artist, HttpStatus.OK))
+				.defaultIfEmpty(new ResponseEntity<>(HttpStatus.NOT_FOUND));
 	}
 
 	@GetMapping("/artists")
@@ -37,17 +37,14 @@ public class ArtistAPI {
 	}
 
 	@GetMapping("/artist/{artistId}/comments")
-	public Mono<Artist> findLast10CommentsByArtistId(@PathVariable String artistId) throws NotFoundException {
+	public Mono<ResponseEntity<Artist>> findLast10CommentsByArtistId(@PathVariable String artistId)
+			throws NotFoundException {
 		return artistRepository.findById(artistId).map(artist -> {
 			commentsRepository.getCommentsByArtisteId(artist.getId()).doOnNext(comment -> {
-				artist.addComment(comment);				
+				artist.addComment(comment);
 			});
-			return artist;
-		});
+			return new ResponseEntity<>(artist, HttpStatus.OK);
+		}).defaultIfEmpty(new ResponseEntity<>(HttpStatus.NOT_FOUND));
 	}
 
-	private void addComment(Artist artist) {
-		
-
-	}
 }
