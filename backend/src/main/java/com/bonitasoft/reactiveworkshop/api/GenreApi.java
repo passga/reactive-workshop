@@ -15,6 +15,8 @@ import com.bonitasoft.reactiveworkshop.domain.Comment;
 import com.bonitasoft.reactiveworkshop.exception.NotFoundException;
 import com.bonitasoft.reactiveworkshop.repository.ArtistRepository;
 import com.bonitasoft.reactiveworkshop.service.web.CommentsService;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import lombok.extern.slf4j.Slf4j;
 import reactor.core.publisher.Flux;
@@ -25,11 +27,13 @@ public class GenreApi {
 
 	private ArtistRepository artistRepository;
 	private CommentsService commentsRepository;
+	private ObjectMapper jsonMapper;
 
 	@Autowired
-	public GenreApi(ArtistRepository artistRepository, CommentsService commentsRepository) {
+	public GenreApi(ArtistRepository artistRepository, CommentsService commentsRepository, ObjectMapper jsonMapper) {
 		this.artistRepository = artistRepository;
 		this.commentsRepository = commentsRepository;
+		this.jsonMapper = jsonMapper;
 	}
 
 	@GetMapping("/genres")
@@ -53,13 +57,17 @@ public class GenreApi {
 
 	@GetMapping(path = "/genre/{genre}/comments/stream", produces = MediaType.APPLICATION_STREAM_JSON_VALUE)
 	public Flux<Comment> handle(@PathVariable String genre) {
-		Map<String, String> artistNameById = artistRepository.findByGenre(genre).get().stream()
-				.collect(Collectors.toMap(Artist::getId, Artist::getName));
-		return commentsRepository.getComments(artistNameById.keySet()).map(comment -> {
-			comment.setArtistName(artistNameById.get(comment.getArtisteId()));
-			return comment;
-		});
+		Flux<Map<String, String>> artistNameById = Flux.just(artistRepository.findByGenre(genre).get().stream()
+				.collect(Collectors.toMap(Artist::getId, Artist::getName))).log();
+		return artistNameById.flatMap(map -> {
+			log.info("get comments for {} ", map.keySet());
+			return commentsRepository.getComments(map.keySet()).log().map(comment -> {
+				log.info("find comments {}", comment);
+				comment.setArtistName(map.get(comment.getArtisteId()));
 
+				return comment;
+			});
+		}).log().doOnError(System.out::println);
 	}
 
 }

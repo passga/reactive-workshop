@@ -37,7 +37,6 @@ public class CommentsService {
 	}
 
 	public Mono<Void> consumeCommenntsStream(EmitterProcessor<Comment> processor) {
-
 		return client.get().uri("/comments/stream").retrieve().bodyToFlux(Comment.class).subscribeWith(processor)
 				.then();
 

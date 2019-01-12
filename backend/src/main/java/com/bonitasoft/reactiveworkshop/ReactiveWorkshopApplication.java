@@ -6,6 +6,8 @@ import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.web.client.RestTemplate;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 @SpringBootApplication
 public class ReactiveWorkshopApplication {
 
@@ -13,10 +15,14 @@ public class ReactiveWorkshopApplication {
 		SpringApplication.run(ReactiveWorkshopApplication.class, args);
 	}
 
-
 	@Bean
 	RestTemplate commentsApiClient() {
 		return new RestTemplateBuilder().rootUri("http://localhost:3004").build();
+	}
+
+	@Bean
+	ObjectMapper jsonMapper() {
+		return new ObjectMapper();
 	}
 
 }
