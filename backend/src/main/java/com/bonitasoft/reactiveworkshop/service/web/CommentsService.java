@@ -10,7 +10,6 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import com.bonitasoft.reactiveworkshop.domain.Comment;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 import reactor.core.publisher.EmitterProcessor;
 import reactor.core.publisher.Flux;
@@ -19,14 +18,13 @@ import reactor.core.publisher.Mono;
 @Service
 public class CommentsService {
 	private EmitterProcessor<Comment> output;
-	// private RestTemplate commentsApiClient;
-	ObjectMapper mapper = new ObjectMapper();
-	WebClient client = WebClient.create("http://localhost:3004");
 
 	private RestTemplate commentsApiClient;
+	private WebClient commentsStreamClient;
 
 	@Autowired
-	CommentsService(RestTemplate commentsApiClient) {
+	CommentsService(RestTemplate commentsApiClient, WebClient commentsStreamClient) {
+		this.commentsStreamClient = commentsStreamClient;
 		output = EmitterProcessor.create();
 		this.commentsApiClient = commentsApiClient;
 		consumeCommenntsStream(output).subscribe();
@@ -37,8 +35,8 @@ public class CommentsService {
 	}
 
 	public Mono<Void> consumeCommenntsStream(EmitterProcessor<Comment> processor) {
-		return client.get().uri("/comments/stream").retrieve().bodyToFlux(Comment.class).subscribeWith(processor)
-				.then();
+		return commentsStreamClient.get().uri("/comments/stream").retrieve().bodyToFlux(Comment.class)
+				.subscribeWith(processor).then();
 
 	}
 

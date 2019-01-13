@@ -26,13 +26,11 @@ public class GenreApi {
 
 	private ArtistRepository artistRepository;
 	private CommentsService commentsRepository;
-	private ObjectMapper jsonMapper;
 
 	@Autowired
 	public GenreApi(ArtistRepository artistRepository, CommentsService commentsRepository, ObjectMapper jsonMapper) {
 		this.artistRepository = artistRepository;
 		this.commentsRepository = commentsRepository;
-		this.jsonMapper = jsonMapper;
 	}
 
 	@GetMapping("/genres")
@@ -55,13 +53,13 @@ public class GenreApi {
 	}
 
 	@GetMapping(path = "/genre/{genre}/comments/stream", produces = MediaType.APPLICATION_STREAM_JSON_VALUE)
-	public Flux<Comment> handle(@PathVariable String genre) {
+	public Flux<Comment> getCommentsStreamByGenre(@PathVariable String genre) {
 		Flux<Map<String, String>> artistNameById = Flux.just(artistRepository.findByGenre(genre).get().stream()
-				.collect(Collectors.toMap(Artist::getId, Artist::getName))).log();
+				.collect(Collectors.toMap(Artist::getId, Artist::getName)));
 		return artistNameById.flatMap(map -> {
-			log.info("get comments for {} ", map.keySet());
+			log.debug("get comments for {} ", map.keySet());
 			return commentsRepository.getComments(map.keySet()).log().map(comment -> {
-				log.info("find comments {}", comment);
+				log.debug("found comments {}", comment);
 				comment.setArtistName(map.get(comment.getArtisteId()));
 
 				return comment;
