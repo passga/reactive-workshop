@@ -41,21 +41,24 @@ public class GenreApi {
 
 	@GetMapping("/genres/{genre}/comments")
 	public List<Comment> findCommentsByGenre(@PathVariable String genre) throws NotFoundException {
-		List<Comment> collect = artistRepository.findByGenre(genre).orElseThrow(NotFoundException::new).stream()
-				.map(artist -> {
-					List<Comment> commentsByArtisteId = commentsRepository.getCommentsByArtisteId(artist.getId());
-					return commentsByArtisteId.stream().map(comment -> {
-						return new Comment(comment.getUserName(), comment.getComment(), artist.getId(),
-								artist.getName());
-					}).collect(Collectors.toList());
-				}).flatMap(List::stream).collect(Collectors.toList());
+
+		List<Artist> findByGenre = artistRepository.findByGenre(genre);
+		if (findByGenre.isEmpty()) {
+			throw new IllegalArgumentException("no artists found for genre " + genre);
+		}
+		List<Comment> collect = findByGenre.stream().map(artist -> {
+			List<Comment> commentsByArtisteId = commentsRepository.getCommentsByArtisteId(artist.getId());
+			return commentsByArtisteId.stream().map(comment -> {
+				return new Comment(comment.getUserName(), comment.getComment(), artist.getId(), artist.getName());
+			}).collect(Collectors.toList());
+		}).flatMap(List::stream).collect(Collectors.toList());
 		return collect;
 	}
 
 	@GetMapping(path = "/genre/{genre}/comments/stream", produces = MediaType.APPLICATION_STREAM_JSON_VALUE)
 	public Flux<Comment> getCommentsStreamByGenre(@PathVariable String genre) {
-		Flux<Map<String, String>> artistNameById = Flux.just(artistRepository.findByGenre(genre).get().stream()
-				.collect(Collectors.toMap(Artist::getId, Artist::getName)));
+		Flux<Map<String, String>> artistNameById = Flux.just(
+				artistRepository.findByGenre(genre).stream().collect(Collectors.toMap(Artist::getId, Artist::getName)));
 		return artistNameById.flatMap(map -> {
 			log.debug("get comments for {} ", map.keySet());
 			return commentsRepository.getComments(map.keySet()).log().map(comment -> {

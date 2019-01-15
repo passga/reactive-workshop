@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -59,8 +60,7 @@ public class GenreApiTest {
 				+ "{\"userName\":\"userName2\",\"comment\":\"userName2_Comments\",\"artistName\":\"id2Name\",\"artist\":\"id2\"}," //
 				+ "{\"userName\":\"userName1\",\"comment\":\"userName1_Comments\",\"artistName\":\"id3Name\",\"artist\":\"id3\"},"//
 				+ "{\"userName\":\"userName2\",\"comment\":\"userName2_Comments\",\"artistName\":\"id3Name\",\"artist\":\"id3\"}]";
-		Optional<List<Artist>> optional = Optional.of(getArtists(ids, genre));
-		when(artistRepository.findByGenre(genre)).thenReturn(optional);
+		when(artistRepository.findByGenre(genre)).thenReturn(getArtists(ids, genre));
 		when(commentsRepository.getCommentsByArtisteId(anyString())).thenReturn(getComments(userName));
 
 		assertThat(this.restTemplate.getForObject("/genres/" + genre + "/comments", String.class)).isEqualTo(expected);
@@ -71,7 +71,7 @@ public class GenreApiTest {
 		String genre = "toto";
 		List<String> userName = Stream.of("userName1", "userName2").collect(Collectors.toList());
 		Optional<List<Artist>> optional = Optional.empty();
-		when(artistRepository.findByGenre(genre)).thenReturn(optional);
+		when(artistRepository.findByGenre(genre)).thenReturn(new ArrayList<>());
 		when(commentsRepository.getCommentsByArtisteId(anyString())).thenReturn(getComments(userName));
 
 		HttpHeaders headers = new HttpHeaders();
@@ -81,7 +81,7 @@ public class GenreApiTest {
 		ResponseEntity<String> response = restTemplate.exchange("/genres/" + genre + "/comments", HttpMethod.GET,
 				entity, String.class);
 
-		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
+		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
 
 	}
 

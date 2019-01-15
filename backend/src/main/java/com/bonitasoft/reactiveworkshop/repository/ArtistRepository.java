@@ -1,7 +1,6 @@
 package com.bonitasoft.reactiveworkshop.repository;
 
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.repository.query.Param;
@@ -12,5 +11,5 @@ import com.bonitasoft.reactiveworkshop.domain.Artist;
 @Repository
 public interface ArtistRepository extends MongoRepository<Artist, String> {
 
-	Optional<List<Artist>> findByGenre(@Param("genre") String genre);
+	List<Artist> findByGenre(@Param("genre") String genre);
 }
