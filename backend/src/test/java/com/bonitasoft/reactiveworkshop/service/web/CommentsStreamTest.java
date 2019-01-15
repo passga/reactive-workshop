@@ -11,13 +11,10 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.reactive.function.client.WebClient;
 
-import com.bonitasoft.reactiveworkshop.domain.Comment;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import lombok.extern.slf4j.Slf4j;
 import reactor.core.publisher.Flux;
 
-@Slf4j
 @RunWith(SpringRunner.class)
 @SpringBootTest
 public class CommentsStreamTest {

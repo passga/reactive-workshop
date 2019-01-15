@@ -19,17 +19,17 @@ public class ArtistRepositoryTest {
 	@Autowired
 	private ArtistRepository artistRepository;
 
-	@Test
-	public void should_return_8_artist_with() {
-		Optional<List<Artist>> artists = artistRepository.findByGenre("Hard Rock");
-		assertEquals(true, artists.isPresent());
-		assertEquals(8, artists.get().size());
-	}
-
-	@Test
-	public void should_return_if_present_false_when_genre_is_unknown() {
-		Optional<List<Artist>> artists = artistRepository.findByGenre("toto");
-		assertEquals(false, artists.isPresent());
-	}
+//	@Test
+//	public void should_return_8_artist_with() {
+//		Optional<List<Artist>> artists = artistRepository.findByGenre("Hard Rock");
+//		assertEquals(true, artists.isPresent());
+//		assertEquals(8, artists.get().size());
+//	}
+//
+//	@Test
+//	public void should_return_if_present_false_when_genre_is_unknown() {
+//		Optional<List<Artist>> artists = artistRepository.findByGenre("toto");
+//		assertEquals(false, artists.isPresent());
+//	}
 
 }
