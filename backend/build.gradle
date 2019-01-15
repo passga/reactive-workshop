@@ -27,11 +27,11 @@ dependencies {
     compileOnly 'org.projectlombok:lombok:1.18.4'
     compile 'com.opencsv:opencsv:4.4'
 
-    compile 'com.h2database:h2:1.4.195'
+//    compile 'com.h2database:h2:1.4.195'
     implementation('org.springframework.boot:spring-boot-starter-data-jpa')
     implementation('org.springframework.boot:spring-boot-starter-web')
     // uncomment these line to use webflux (reactive) instead of normal web
-//    implementation('org.springframework.boot:spring-boot-starter-data-mongodb-reactive')
+    implementation('org.springframework.boot:spring-boot-starter-data-mongodb-reactive')
     implementation('org.springframework.boot:spring-boot-starter-webflux')
     testImplementation('org.springframework.boot:spring-boot-starter-test')
     testImplementation('io.projectreactor:reactor-test')
