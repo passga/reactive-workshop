@@ -1,0 +1,40 @@
+version: '3.3' 
+# Deploys MongoDB with customization scripts and container with Mongo client 
+# https://fabianlee.org/2018/05/20/docker-using-docker-compose-to-link-a-mongodb-server-and-client/ 
+# 
+# usage: 
+# sudo docker-compose build 
+# sudo docker-compose up 
+ 
+ 
+services: 
+ 
+  my-mongodb: 
+    image: mongo 
+    container_name: mongo 
+    ports: 
+      - 27017:27017 
+    environment: 
+      - MONGO_INITDB_DATABASE=music_artist 
+ 
+    volumes: 
+      # seeding scripts 
+      - ./mongo-entrypoint:/docker-entrypoint-initdb.d 
+      # named volumes 
+      - mongodb:/data/db 
+      - mongoconfig:/data/configdb 
+  mongo-express: 
+     image: mongo-express 
+     restart: always 
+     ports: 
+       - 8081:8081 
+     environment: 
+       - MONGO_INITDB_DATABASE=music_artist 
+  
+ 
+  
+volumes: 
+  # default dir on Ubuntu: /var/lib/docker/volumes 
+  mongodb: 
+  mongoconfig: 
+ 

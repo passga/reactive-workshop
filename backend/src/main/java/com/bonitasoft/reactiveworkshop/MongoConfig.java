@@ -33,6 +33,6 @@ public class MongoConfig  {
 
 	@Bean
 	public ReactiveMongoDatabaseFactory reactiveMongoDatabaseFactory() {
-	    return new SimpleReactiveMongoDatabaseFactory(mongoClient(), "mongotest");
+	    return new SimpleReactiveMongoDatabaseFactory(mongoClient(), "music_artist");
 	}
 }
