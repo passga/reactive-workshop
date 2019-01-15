@@ -81,7 +81,7 @@ public class GenreApiTest {
 		ResponseEntity<String> response = restTemplate.exchange("/genres/" + genre + "/comments", HttpMethod.GET,
 				entity, String.class);
 
-		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
+		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
 
 	}
 

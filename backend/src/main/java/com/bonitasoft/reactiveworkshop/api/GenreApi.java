@@ -41,7 +41,8 @@ public class GenreApi {
 
 	@GetMapping("/genres/{genre}/comments")
 	public List<Comment> findCommentsByGenre(@PathVariable String genre) throws NotFoundException {
-		List<Comment> collect = artistRepository.findByGenre(genre).orElseThrow(NotFoundException::new).stream()
+		List<Comment> collect = artistRepository.findByGenre(genre)
+				.orElseThrow(() -> new IllegalArgumentException("no artist found for gene " + genre)).stream()
 				.map(artist -> {
 					List<Comment> commentsByArtisteId = commentsRepository.getCommentsByArtisteId(artist.getId());
 					return commentsByArtisteId.stream().map(comment -> {
