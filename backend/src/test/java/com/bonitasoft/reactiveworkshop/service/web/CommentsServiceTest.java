@@ -46,7 +46,7 @@ public class CommentsServiceTest {
 	}
 
 	@Test
-	public void testGetRootResourceOnce() throws JsonParseException, JsonMappingException, IOException {
+	public void service_should_return_comments_list() throws JsonParseException, JsonMappingException, IOException {
 		String body = "["//
 				+ "{\"artist\":\"6125d26e6d4d0d9b1a29b298700d8fe1\",\"userName\":\"nolanb\",\"comment\":\"Purus, vel ultricies sit Nam eget amet purus.\"},"//
 				+ "{\"artist\":\"6125d26e6d4d0d9b1a29b298700d8fe1\",\"userName\":\"jwolf\",\"comment\":\"Lectus aliquet congue scelerisque augue. Amet metus adipisicing pede.\"},"//

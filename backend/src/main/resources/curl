@@ -1,0 +1,11 @@
+ curl http://172.17.0.1:8080/artists
+ 
+
+ curl http://172.17.0.1:8080/artist/fff01efeaf6992e6ffeb133b2419a3e7
+ 
+ curl http://172.17.0.1:8080/artist/fff01efeaf6992e6ffeb133b2419a3e7/comments
+ 
+
+curl http://172.17.0.1:8080/genre/Rock/comments/stream
+
+
